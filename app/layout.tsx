@@ -44,9 +44,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sora.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${sora.variable} ${inter.variable} ${plexMono.variable} h-dvh overflow-hidden antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-ground text-ink-primary">
+      <body className="flex h-dvh flex-col overflow-hidden bg-ground text-ink-primary overscroll-none">
         {children}
       </body>
     </html>

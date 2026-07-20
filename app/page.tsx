@@ -11,7 +11,7 @@ export default function Home() {
   const [activeRole, setActiveRole] = useState<InquiryRole | null>(null);
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="relative h-dvh w-full overflow-hidden">
       <Hero
         infoOpen={infoOpen}
         onSelectRole={setActiveRole}

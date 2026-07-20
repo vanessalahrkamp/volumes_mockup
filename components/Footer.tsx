@@ -8,7 +8,7 @@ export function Footer({
   if (infoOpen) return null;
 
   return (
-    <footer className="relative z-10 flex justify-center px-6 pb-8 sm:px-10 sm:pb-10">
+    <footer className="absolute inset-x-0 bottom-0 z-10 flex justify-center px-6 pb-8 sm:px-10 sm:pb-10">
       <button
         type="button"
         onClick={onToggleInfo}
