@@ -46,7 +46,13 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
 
         <button
           type="button"
-          onClick={onOpenContact}
+          onClick={(event) => {
+            // Clicking a button doesn't reliably focus it in every browser
+            // (notably Safari), and ContactModal restores focus here on
+            // close — force it so that restore always has something to land on.
+            event.currentTarget.focus();
+            onOpenContact();
+          }}
           className="mt-10 inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
         >
           Contact Volumes
