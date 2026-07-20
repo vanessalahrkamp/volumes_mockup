@@ -96,7 +96,7 @@ export function DataInterestStep({
         </p>
         <a
           href={mailtoHref}
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Open email
           <span aria-hidden>→</span>
@@ -169,7 +169,7 @@ export function DataInterestStep({
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               Continue
               <span aria-hidden>→</span>
@@ -213,7 +213,7 @@ export function DataInterestStep({
                 type="checkbox"
                 checked={selectedIds.has(entry.id)}
                 onChange={() => toggle(entry.id)}
-                className="h-4 w-4 accent-[color:var(--color-accent-teal)]"
+                className="h-4 w-4 accent-[color:var(--color-accent)]"
               />
               <span className="text-ink-body">{entry.item}</span>
             </span>
@@ -239,7 +239,7 @@ export function DataInterestStep({
           type="button"
           disabled={selectedIds.size === 0}
           onClick={() => setPhase("details")}
-          className="inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+          className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
         >
           Continue ({selectedIds.size})
           <span aria-hidden>→</span>
@@ -250,7 +250,7 @@ export function DataInterestStep({
 }
 
 const inputClass =
-  "w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent-teal/60 focus:outline-none";
+  "w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none";
 
 function Field({
   label,

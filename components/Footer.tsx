@@ -5,7 +5,7 @@ export function Footer() {
         Volumes, Inc. · 2026 · NYC ·{" "}
         <a
           href="mailto:Hello@volumes.cloud"
-          className="text-ink-muted underline decoration-ink-muted/40 underline-offset-4 transition-colors hover:text-accent-teal hover:decoration-accent-teal"
+          className="text-ink-muted underline decoration-ink-muted/40 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
         >
           Hello@volumes.cloud
         </a>

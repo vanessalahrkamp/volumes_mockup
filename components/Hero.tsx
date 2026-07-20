@@ -25,21 +25,19 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
       />
 
       <div className="relative z-10 flex flex-col items-center">
-        <Image
-          src="/volumes-mark.png"
-          alt="Volumes"
-          width={88}
-          height={88}
-          priority
-          className="h-16 w-16 sm:h-20 sm:w-20"
-        />
-        <p className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-accent-teal">
-          Volumes
-        </p>
-
-        <h1 className="mt-8 max-w-3xl font-display text-4xl font-semibold tracking-tight text-ink-primary sm:text-5xl md:text-6xl">
-          Data for Physical AI
+        <h1>
+          <Image
+            src="/volumes-lockup.png"
+            alt="Volumes"
+            width={1600}
+            height={847}
+            priority
+            className="w-72 sm:w-[420px] md:w-[520px]"
+          />
         </h1>
+        <p className="mt-2 max-w-2xl font-display text-2xl font-medium tracking-tight text-ink-body sm:text-3xl md:text-4xl">
+          Data for Physical AI
+        </p>
         <p className="mt-5 max-w-xl text-base text-ink-body sm:text-lg">
           Volumes buys and sells data for physical AI.
         </p>
@@ -53,10 +51,9 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
             event.currentTarget.focus();
             onOpenContact();
           }}
-          className="mt-10 inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+          className="mt-10 inline-flex items-center gap-2 rounded-full border border-accent/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Contact Volumes
-          <span aria-hidden>→</span>
         </button>
       </div>
     </section>

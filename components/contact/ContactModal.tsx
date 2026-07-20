@@ -107,7 +107,7 @@ export function ContactModal({
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute right-4 top-4 text-ink-muted transition-colors hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+          className="absolute right-4 top-4 text-ink-muted transition-colors hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           ✕
         </button>

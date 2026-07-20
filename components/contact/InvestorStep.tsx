@@ -39,7 +39,7 @@ export function InvestorStep({
       <button
         type="button"
         onClick={() => setShowComingSoon(true)}
-        className="mt-6 w-full rounded-lg border border-white/10 px-4 py-3 text-left font-body text-ink-body transition-colors hover:border-accent-teal/50 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+        className="mt-6 w-full rounded-lg border border-white/10 px-4 py-3 text-left font-body text-ink-body transition-colors hover:border-accent/50 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         Investor login
       </button>
@@ -62,7 +62,7 @@ export function InvestorStep({
           <div className="mt-4">
             <a
               href={mailtoHref}
-              className="inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               Open email
               <span aria-hidden>→</span>
@@ -87,7 +87,7 @@ export function InvestorStep({
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@company.com"
-              className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent-teal/60 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none"
             />
             <div className="flex items-center justify-between">
               <button
@@ -99,7 +99,7 @@ export function InvestorStep({
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-accent-teal/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent-teal transition-colors hover:border-accent-teal hover:bg-accent-teal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+                className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Notify me
                 <span aria-hidden>→</span>

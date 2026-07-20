@@ -3,14 +3,14 @@
 :root {
   --color-ground: #000000;
   --color-void: #04060f;
-  --color-glow-inner: #1a3337;
-  --color-glow-outer: #0c161a;
+  --color-glow-inner: #262626;
+  --color-glow-outer: #0d0d0d;
 
   --color-ink-primary: #f4f6f6;
   --color-ink-body: #c5cfdc;
   --color-ink-muted: #6b7c93;
 
-  --color-accent-teal: #2dd4bf;
+  --color-accent: #f4f6f6;
   --color-accent-blue-start: #3b6ea8;
   --color-accent-blue-end: #4a86c5;
   --color-warning: #ff6b4a;
@@ -26,7 +26,7 @@
   --color-ink-body: var(--color-ink-body);
   --color-ink-muted: var(--color-ink-muted);
 
-  --color-accent-teal: var(--color-accent-teal);
+  --color-accent: var(--color-accent);
   --color-accent-blue-start: var(--color-accent-blue-start);
   --color-accent-blue-end: var(--color-accent-blue-end);
   --color-warning: var(--color-warning);

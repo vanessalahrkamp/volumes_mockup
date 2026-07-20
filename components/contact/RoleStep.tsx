@@ -21,7 +21,7 @@ export function RoleStep({
             key={role}
             type="button"
             onClick={() => onSelect(role)}
-            className="rounded-lg border border-white/10 px-4 py-3 text-left font-body text-ink-body transition-colors hover:border-accent-teal/50 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+            className="rounded-lg border border-white/10 px-4 py-3 text-left font-body text-ink-body transition-colors hover:border-accent/50 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {role}
           </button>
