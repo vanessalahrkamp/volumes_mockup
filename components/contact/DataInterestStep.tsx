@@ -27,6 +27,8 @@ export function DataInterestStep({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(),
   );
+  const [otherChecked, setOtherChecked] = useState(false);
+  const [otherText, setOtherText] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -85,6 +87,9 @@ export function DataInterestStep({
 
   function handleListKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    // Don't hijack arrow keys while typing in the "Other" text field.
+    const target = event.target as HTMLInputElement;
+    if (target.tagName === "INPUT" && target.type === "text") return;
     event.preventDefault();
     const checkboxes = Array.from(
       listRef.current?.querySelectorAll<HTMLInputElement>(
@@ -100,9 +105,16 @@ export function DataInterestStep({
     checkboxes[nextIndex]?.focus();
   }
 
-  const selectedNames = dataTaxonomy
-    .filter((entry) => selectedIds.has(entry.id))
-    .map((entry) => entry.item);
+  const selectedNames = [
+    ...dataTaxonomy
+      .filter((entry) => selectedIds.has(entry.id))
+      .map((entry) => entry.item),
+    ...(otherChecked
+      ? [otherText.trim() ? `Other: ${otherText.trim()}` : "Other"]
+      : []),
+  ];
+
+  const selectionCount = selectedIds.size + (otherChecked ? 1 : 0);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -247,16 +259,15 @@ export function DataInterestStep({
           </>
         ) : (
           <>
-            <ItemRow
-              entry={unknownItem}
-              checked={selectedIds.has(unknownItem.id)}
-              onToggle={toggle}
-            />
             {groupedCategories.map(([category, items]) => {
+              const isOther = category === "Other";
               const isOpen = expandedCategories.has(category);
-              const selectedCount = items.filter((entry) =>
-                selectedIds.has(entry.id),
-              ).length;
+              const selectedCount =
+                items.filter((entry) => selectedIds.has(entry.id)).length +
+                (isOther
+                  ? (selectedIds.has(unknownItem.id) ? 1 : 0) +
+                    (otherChecked ? 1 : 0)
+                  : 0);
               return (
                 <div
                   key={category}
@@ -286,6 +297,40 @@ export function DataInterestStep({
                         indent
                       />
                     ))}
+                  {isOpen && isOther && (
+                    <>
+                      <ItemRow
+                        entry={unknownItem}
+                        checked={selectedIds.has(unknownItem.id)}
+                        onToggle={toggle}
+                        indent
+                      />
+                      <label className="flex cursor-pointer items-center gap-3 border-b border-white/5 py-3 pl-9 pr-3 text-sm last:border-b-0 hover:bg-white/5">
+                        <input
+                          type="checkbox"
+                          checked={otherChecked}
+                          onChange={() => setOtherChecked((v) => !v)}
+                          className="chrome-checkbox focus-ring"
+                        />
+                        <span className="text-ink-body">Other</span>
+                      </label>
+                      {otherChecked && (
+                        <div className="border-b border-white/5 py-2 pl-9 pr-3 last:border-b-0">
+                          <input
+                            type="text"
+                            value={otherText}
+                            onChange={(event) =>
+                              setOtherText(event.target.value)
+                            }
+                            placeholder="Describe your data type…"
+                            aria-label="Other data type"
+                            autoFocus
+                            className={inputClass}
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               );
             })}
@@ -295,7 +340,7 @@ export function DataInterestStep({
 
       <div className="mt-6 flex items-center justify-end">
         <ChromeButton
-          disabled={selectedIds.size === 0}
+          disabled={selectionCount === 0}
           onClick={() => goTo("details")}
         >
           Next
