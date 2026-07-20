@@ -1,12 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { DataInterestStep } from "./DataInterestStep";
 import { InvestorStep } from "./InvestorStep";
 import type { InquiryRole } from "@/lib/buildMailto";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
 
 export function ContactModal({
   role,
@@ -67,26 +70,53 @@ export function ContactModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <div
+      <motion.div
         aria-hidden
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
         onClick={handleClose}
       />
-      <div
+      <motion.div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="contact-modal-title"
         tabIndex={-1}
-        className="relative z-10 max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl border border-white/10 bg-void p-6 shadow-2xl outline-none sm:p-8"
+        initial={{ opacity: 0, scale: 0.96, y: 12, filter: "blur(8px)" }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        exit={{
+          opacity: 0,
+          scale: 0.97,
+          y: 8,
+          filter: "blur(4px)",
+          transition: { duration: 0.18 },
+        }}
+        transition={{ duration: 0.3, ease: EASE_OUT_QUINT }}
+        className="glass-panel shadow-glass relative z-10 max-h-[85vh] w-full max-w-md overflow-y-auto rounded-3xl p-6 outline-none sm:p-8"
       >
         <button
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute right-4 top-4 text-ink-muted transition-colors hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="focus-ring absolute right-3 top-3 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-white/5 hover:text-ink-primary"
         >
-          ✕
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M3 3l10 10M13 3L3 13"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
         </button>
 
         {role === "Investor" ? (
@@ -94,7 +124,7 @@ export function ContactModal({
         ) : (
           <DataInterestStep role={role} onClose={handleClose} />
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

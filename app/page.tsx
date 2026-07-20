@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/contact/ContactModal";
@@ -11,16 +12,28 @@ export default function Home() {
   const [activeRole, setActiveRole] = useState<InquiryRole | null>(null);
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden">
-      <Hero
-        infoOpen={infoOpen}
-        onSelectRole={setActiveRole}
-        onGoHome={() => setInfoOpen(false)}
-      />
-      <Footer infoOpen={infoOpen} onToggleInfo={() => setInfoOpen(true)} />
-      {activeRole && (
-        <ContactModal role={activeRole} onClose={() => setActiveRole(null)} />
-      )}
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="relative h-dvh w-full overflow-hidden">
+        <Hero
+          infoOpen={infoOpen}
+          videoPaused={activeRole !== null}
+          onSelectRole={setActiveRole}
+        />
+        <Footer
+          infoOpen={infoOpen}
+          onToggleInfo={() => setInfoOpen(true)}
+          onGoHome={() => setInfoOpen(false)}
+        />
+        <AnimatePresence>
+          {activeRole && (
+            <ContactModal
+              key="contact-modal"
+              role={activeRole}
+              onClose={() => setActiveRole(null)}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </MotionConfig>
   );
 }

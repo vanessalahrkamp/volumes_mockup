@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { buildMailto } from "@/lib/buildMailto";
+import { ChromeButton } from "@/components/ui/ChromeButton";
+import { inputClass } from "./styles";
 
-export function InvestorStep({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
+export function InvestorStep({ onClose }: { onClose: () => void }) {
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [email, setEmail] = useState("");
   const [mailtoHref, setMailtoHref] = useState("");
@@ -37,14 +36,25 @@ export function InvestorStep({
       <button
         type="button"
         onClick={() => setShowComingSoon(true)}
-        className="mt-6 w-full rounded-lg border border-white/10 px-4 py-3 text-left font-body text-ink-body transition-colors hover:border-accent/50 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="focus-ring group mt-6 flex w-full cursor-pointer items-center justify-between rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3.5 text-left font-body text-ink-body transition-colors duration-200 hover:border-white/30 hover:bg-white/[0.05] hover:text-ink-primary"
       >
         Investor login
+        <span
+          aria-hidden
+          className="text-ink-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-ink-primary"
+        >
+          →
+        </span>
       </button>
       {showComingSoon && (
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink-muted">
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="mt-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink-muted"
+        >
           Coming soon.
-        </p>
+        </motion.p>
       )}
 
       <div className="mt-8 border-t border-white/10 pt-6">
@@ -58,17 +68,14 @@ export function InvestorStep({
 
         {submitted ? (
           <div className="mt-4">
-            <a
-              href={mailtoHref}
-              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
+            <ChromeButton href={mailtoHref}>
               Open email
               <span aria-hidden>→</span>
-            </a>
+            </ChromeButton>
             <button
               type="button"
               onClick={onClose}
-              className="mt-4 block text-sm text-ink-muted underline decoration-ink-muted/40 underline-offset-4 hover:text-ink-primary"
+              className="chrome-underline focus-ring mt-4 block cursor-pointer text-sm text-ink-muted transition-colors hover:text-ink-primary"
             >
               Close
             </button>
@@ -85,16 +92,13 @@ export function InvestorStep({
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@company.com"
-              className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none"
+              className={inputClass}
             />
             <div className="flex items-center justify-end">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
+              <ChromeButton type="submit">
                 Notify me
                 <span aria-hidden>→</span>
-              </button>
+              </ChromeButton>
             </div>
           </form>
         )}

@@ -1,10 +1,15 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { dataTaxonomy, type DataTaxonomyItem } from "@/lib/dataTaxonomy";
 import { buildMailto } from "@/lib/buildMailto";
+import { ChromeButton } from "@/components/ui/ChromeButton";
+import { inputClass } from "./styles";
 
 type Phase = "select" | "details" | "done";
+
+const PHASE_ORDER: Record<Phase, number> = { select: 0, details: 1, done: 2 };
 
 export function DataInterestStep({
   role,
@@ -13,7 +18,10 @@ export function DataInterestStep({
   role: "Buyer" | "Seller";
   onClose: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>("select");
+  const [[phase, direction], setPhaseState] = useState<[Phase, number]>([
+    "select",
+    1,
+  ]);
   const [query, setQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
@@ -27,6 +35,10 @@ export function DataInterestStep({
   const listRef = useRef<HTMLDivElement>(null);
 
   const verb = role === "Buyer" ? "buying" : "selling";
+
+  function goTo(next: Phase) {
+    setPhaseState([next, PHASE_ORDER[next] >= PHASE_ORDER[phase] ? 1 : -1]);
+  }
 
   const unknownItem = useMemo(
     () => dataTaxonomy.find((entry) => entry.category === "Unknown")!,
@@ -103,109 +115,99 @@ export function DataInterestStep({
       dataTypes: selectedNames,
     });
     setMailtoHref(href);
-    setPhase("done");
+    goTo("done");
   }
 
-  if (phase === "done") {
-    return (
-      <div>
-        <h2
-          id="contact-modal-title"
-          className="text-xl font-semibold text-ink-primary"
-        >
-          Ready to send
-        </h2>
-        <p className="mt-3 text-sm text-ink-body">
-          We&apos;ve put together your message to Volumes. Open it in your
-          email client to send.
-        </p>
-        <a
-          href={mailtoHref}
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          Open email
-          <span aria-hidden>→</span>
-        </a>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-4 block text-sm text-ink-muted underline decoration-ink-muted/40 underline-offset-4 hover:text-ink-primary"
-        >
-          Close
-        </button>
-      </div>
-    );
-  }
+  const donePhase = (
+    <div>
+      <h2
+        id="contact-modal-title"
+        className="text-xl font-semibold text-ink-primary"
+      >
+        Ready to send
+      </h2>
+      <p className="mt-3 text-sm text-ink-body">
+        We&apos;ve put together your message to Volumes. Open it in your
+        email client to send.
+      </p>
+      <ChromeButton href={mailtoHref} className="mt-6">
+        Open email
+        <span aria-hidden>→</span>
+      </ChromeButton>
+      <button
+        type="button"
+        onClick={onClose}
+        className="chrome-underline focus-ring mt-4 block cursor-pointer text-sm text-ink-muted transition-colors hover:text-ink-primary"
+      >
+        Close
+      </button>
+    </div>
+  );
 
-  if (phase === "details") {
-    return (
-      <div>
-        <h2
-          id="contact-modal-title"
-          className="text-xl font-semibold text-ink-primary"
-        >
-          Your details
-        </h2>
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-          <Field label="Name" htmlFor="contact-name">
-            <input
-              id="contact-name"
-              required
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Email" htmlFor="contact-email">
-            <input
-              id="contact-email"
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Company (optional)" htmlFor="contact-company">
-            <input
-              id="contact-company"
-              value={company}
-              onChange={(event) => setCompany(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Message (optional)" htmlFor="contact-message">
-            <textarea
-              id="contact-message"
-              rows={3}
-              value={message}
-              onChange={(event) => setMessage(event.target.value)}
-              className={inputClass}
-            />
-          </Field>
+  const detailsPhase = (
+    <div>
+      <h2
+        id="contact-modal-title"
+        className="text-xl font-semibold text-ink-primary"
+      >
+        Your details
+      </h2>
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+        <Field label="Name" htmlFor="contact-name">
+          <input
+            id="contact-name"
+            required
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Email" htmlFor="contact-email">
+          <input
+            id="contact-email"
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Company (optional)" htmlFor="contact-company">
+          <input
+            id="contact-company"
+            value={company}
+            onChange={(event) => setCompany(event.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Message (optional)" htmlFor="contact-message">
+          <textarea
+            id="contact-message"
+            rows={3}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            className={inputClass}
+          />
+        </Field>
 
-          <div className="mt-2 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => setPhase("select")}
-              className="text-sm text-ink-muted underline decoration-ink-muted/40 underline-offset-4 hover:text-ink-primary"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              Continue
-              <span aria-hidden>→</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
+        <div className="mt-2 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => goTo("select")}
+            className="chrome-underline focus-ring cursor-pointer text-sm text-ink-muted transition-colors hover:text-ink-primary"
+          >
+            Back
+          </button>
+          <ChromeButton type="submit">
+            Next
+            <span aria-hidden>→</span>
+          </ChromeButton>
+        </div>
+      </form>
+    </div>
+  );
 
-  return (
+  const selectPhase = (
     <div>
       <h2
         id="contact-modal-title"
@@ -226,7 +228,7 @@ export function DataInterestStep({
       <div
         ref={listRef}
         onKeyDown={handleListKeyDown}
-        className="mt-3 max-h-64 overflow-y-auto rounded-lg border border-white/10"
+        className="mt-3 max-h-64 overflow-y-auto rounded-xl border border-white/12"
       >
         {filtered ? (
           <>
@@ -256,12 +258,15 @@ export function DataInterestStep({
                 selectedIds.has(entry.id),
               ).length;
               return (
-                <div key={category} className="border-b border-white/5 last:border-b-0">
+                <div
+                  key={category}
+                  className="border-b border-white/5 last:border-b-0"
+                >
                   <button
                     type="button"
                     onClick={() => toggleCategory(category)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-white/5"
+                    className="focus-ring flex w-full cursor-pointer items-center justify-between px-3 py-3 text-left transition-colors hover:bg-white/5"
                   >
                     <span className="font-mono text-[11px] uppercase tracking-wide text-ink-muted">
                       {category}
@@ -289,22 +294,35 @@ export function DataInterestStep({
       </div>
 
       <div className="mt-6 flex items-center justify-end">
-        <button
-          type="button"
+        <ChromeButton
           disabled={selectedIds.size === 0}
-          onClick={() => setPhase("details")}
-          className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+          onClick={() => goTo("details")}
         >
-          Continue ({selectedIds.size})
+          Next
           <span aria-hidden>→</span>
-        </button>
+        </ChromeButton>
       </div>
     </div>
   );
-}
 
-const inputClass =
-  "w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none";
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={phase}
+        initial={{ opacity: 0, x: direction * 20, filter: "blur(3px)" }}
+        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+        exit={{ opacity: 0, x: direction * -20, filter: "blur(3px)" }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        {phase === "select"
+          ? selectPhase
+          : phase === "details"
+            ? detailsPhase
+            : donePhase}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 function ItemRow({
   entry,
@@ -321,7 +339,7 @@ function ItemRow({
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-center justify-between gap-3 border-b border-white/5 py-2.5 pr-3 text-sm last:border-b-0 hover:bg-white/5 ${
+      className={`flex cursor-pointer items-center justify-between gap-3 border-b border-white/5 py-3 pr-3 text-sm last:border-b-0 hover:bg-white/5 ${
         indent ? "pl-9" : "pl-3"
       }`}
     >
@@ -330,12 +348,12 @@ function ItemRow({
           type="checkbox"
           checked={checked}
           onChange={() => onToggle(entry.id)}
-          className="h-4 w-4 accent-[color:var(--color-accent)]"
+          className="chrome-checkbox focus-ring"
         />
         <span className="text-ink-body">{entry.item}</span>
       </span>
       {showCategory && (
-        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">
+        <span className="font-mono text-[11px] uppercase tracking-wide text-ink-muted">
           {entry.category}
         </span>
       )}

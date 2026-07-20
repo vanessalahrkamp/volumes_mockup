@@ -43,3 +43,6 @@ next-env.d.ts
 # raw source assets (large/unprocessed — processed versions live in public/)
 /volumes_reindustrialize.mp4
 /Volumes Logo.jpg
+
+# python bytecode (skill scripts)
+__pycache__/
