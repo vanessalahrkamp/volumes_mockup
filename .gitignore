@@ -43,8 +43,3 @@ next-env.d.ts
 # raw source assets (large/unprocessed — processed versions live in public/)
 /volumes_reindustrialize.mp4
 /Volumes Logo.jpg
-
-# hero-loop.mp4 re-encode landed at 287MB — over GitHub's 100MB/file limit.
-# webm (26MB) is committed and covers modern browsers; re-encode mp4 smaller
-# before this can go to GitHub, or host it outside git (Vercel Blob, etc).
-/public/hero-loop.mp4
