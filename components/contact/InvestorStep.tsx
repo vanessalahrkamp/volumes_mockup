@@ -4,10 +4,8 @@ import { useState } from "react";
 import { buildMailto } from "@/lib/buildMailto";
 
 export function InvestorStep({
-  onBack,
   onClose,
 }: {
-  onBack: () => void;
   onClose: () => void;
 }) {
   const [showComingSoon, setShowComingSoon] = useState(false);
@@ -89,14 +87,7 @@ export function InvestorStep({
               placeholder="you@company.com"
               className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none"
             />
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={onBack}
-                className="text-sm text-ink-muted underline decoration-ink-muted/40 underline-offset-4 hover:text-ink-primary"
-              >
-                Back
-              </button>
+            <div className="flex items-center justify-end">
               <button
                 type="submit"
                 className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

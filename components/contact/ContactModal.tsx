@@ -1,31 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { RoleStep } from "./RoleStep";
+import { useCallback, useEffect, useRef } from "react";
 import { DataInterestStep } from "./DataInterestStep";
 import { InvestorStep } from "./InvestorStep";
 import type { InquiryRole } from "@/lib/buildMailto";
-
-type Step = "role" | "dataInterest" | "investor";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export function ContactModal({
-  open,
+  role,
   onClose,
 }: {
-  open: boolean;
+  role: InquiryRole;
   onClose: () => void;
 }) {
-  const [step, setStep] = useState<Step>("role");
-  const [role, setRole] = useState<InquiryRole | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!open) return;
-
     previousFocusRef.current = document.activeElement as HTMLElement;
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => dialogRef.current?.focus());
@@ -34,18 +27,14 @@ export function ContactModal({
       cancelAnimationFrame(frame);
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, []);
 
   const handleClose = useCallback(() => {
     previousFocusRef.current?.focus();
-    setStep("role");
-    setRole(null);
     onClose();
   }, [onClose]);
 
   useEffect(() => {
-    if (!open) return;
-
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -74,19 +63,7 @@ export function ContactModal({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, handleClose]);
-
-  if (!open) return null;
-
-  function chooseRole(nextRole: InquiryRole) {
-    setRole(nextRole);
-    setStep(nextRole === "Investor" ? "investor" : "dataInterest");
-  }
-
-  function backToRole() {
-    setStep("role");
-    setRole(null);
-  }
+  }, [handleClose]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
@@ -112,16 +89,10 @@ export function ContactModal({
           ✕
         </button>
 
-        {step === "role" && <RoleStep onSelect={chooseRole} />}
-        {step === "dataInterest" && role && role !== "Investor" && (
-          <DataInterestStep
-            role={role}
-            onBack={backToRole}
-            onClose={handleClose}
-          />
-        )}
-        {step === "investor" && (
-          <InvestorStep onBack={backToRole} onClose={handleClose} />
+        {role === "Investor" ? (
+          <InvestorStep onClose={handleClose} />
+        ) : (
+          <DataInterestStep role={role} onClose={handleClose} />
         )}
       </div>
     </div>

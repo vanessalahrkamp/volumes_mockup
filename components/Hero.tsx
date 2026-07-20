@@ -2,8 +2,19 @@
 
 import Image from "next/image";
 import { HeroVideo } from "./HeroVideo";
+import type { InquiryRole } from "@/lib/buildMailto";
 
-export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
+const ROLES: InquiryRole[] = ["Buyer", "Seller", "Investor"];
+
+export function Hero({
+  infoOpen,
+  onSelectRole,
+  onGoHome,
+}: {
+  infoOpen: boolean;
+  onSelectRole: (role: InquiryRole) => void;
+  onGoHome: () => void;
+}) {
   return (
     <section className="relative flex min-h-screen flex-1 flex-col items-center justify-center overflow-hidden px-6 text-center">
       <HeroVideo />
@@ -35,19 +46,45 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
             className="w-72 sm:w-[420px] md:w-[520px]"
           />
         </h1>
-        <button
-          type="button"
-          onClick={(event) => {
-            // Clicking a button doesn't reliably focus it in every browser
-            // (notably Safari), and ContactModal restores focus here on
-            // close — force it so that restore always has something to land on.
-            event.currentTarget.focus();
-            onOpenContact();
-          }}
-          className="mt-10 inline-flex items-center gap-2 rounded-full border border-accent/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          Contact Volumes
-        </button>
+
+        {infoOpen && (
+          <>
+            <p className="mt-5 font-mono text-sm uppercase tracking-[0.25em] text-ink-body sm:text-base">
+              Data for Physical AI
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              {ROLES.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={(event) => {
+                    // Clicking a button doesn't reliably focus it in every
+                    // browser (notably Safari), and ContactModal restores
+                    // focus here on close — force it so restore has a target.
+                    event.currentTarget.focus();
+                    onSelectRole(role);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-8 max-w-xs text-sm text-ink-muted">
+              Volumes buys and sells data for physical AI.
+            </p>
+
+            <button
+              type="button"
+              onClick={onGoHome}
+              className="mt-4 font-mono text-xs uppercase tracking-[0.2em] text-ink-muted underline decoration-ink-muted/40 underline-offset-4 transition-colors hover:text-ink-primary hover:decoration-ink-primary"
+            >
+              Home
+            </button>
+          </>
+        )}
       </div>
     </section>
   );

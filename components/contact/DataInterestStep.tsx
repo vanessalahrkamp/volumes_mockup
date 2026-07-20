@@ -8,11 +8,9 @@ type Phase = "select" | "details" | "done";
 
 export function DataInterestStep({
   role,
-  onBack,
   onClose,
 }: {
   role: "Buyer" | "Seller";
-  onBack: () => void;
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("select");
@@ -227,14 +225,7 @@ export function DataInterestStep({
         )}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="text-sm text-ink-muted underline decoration-ink-muted/40 underline-offset-4 hover:text-ink-primary"
-        >
-          Back
-        </button>
+      <div className="mt-6 flex items-center justify-end">
         <button
           type="button"
           disabled={selectedIds.size === 0}

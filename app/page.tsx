@@ -4,18 +4,23 @@ import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/contact/ContactModal";
+import type { InquiryRole } from "@/lib/buildMailto";
 
 export default function Home() {
-  const [isContactOpen, setContactOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [activeRole, setActiveRole] = useState<InquiryRole | null>(null);
 
   return (
     <div className="flex flex-1 flex-col">
-      <Hero onOpenContact={() => setContactOpen(true)} />
-      <Footer />
-      <ContactModal
-        open={isContactOpen}
-        onClose={() => setContactOpen(false)}
+      <Hero
+        infoOpen={infoOpen}
+        onSelectRole={setActiveRole}
+        onGoHome={() => setInfoOpen(false)}
       />
+      <Footer infoOpen={infoOpen} onToggleInfo={() => setInfoOpen(true)} />
+      {activeRole && (
+        <ContactModal role={activeRole} onClose={() => setActiveRole(null)} />
+      )}
     </div>
   );
 }
