@@ -12,7 +12,7 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 55% at 50% 42%, var(--color-glow-inner) 0%, var(--color-glow-outer) 45%, transparent 75%)",
+            "radial-gradient(ellipse 42% 38% at 50% 40%, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.08) 60%, transparent 80%)",
         }}
       />
       <div
@@ -20,7 +20,7 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 80% at 50% 45%, transparent 55%, var(--color-ground) 100%)",
+            "radial-gradient(ellipse 95% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.42) 100%)",
         }}
       />
 
@@ -35,13 +35,6 @@ export function Hero({ onOpenContact }: { onOpenContact: () => void }) {
             className="w-72 sm:w-[420px] md:w-[520px]"
           />
         </h1>
-        <p className="mt-2 max-w-2xl font-display text-2xl font-medium tracking-tight text-ink-body sm:text-3xl md:text-4xl">
-          Data for Physical AI
-        </p>
-        <p className="mt-5 max-w-xl text-base text-ink-body sm:text-lg">
-          Volumes buys and sells data for physical AI.
-        </p>
-
         <button
           type="button"
           onClick={(event) => {
