@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/vanessalahrkamp/.claude/**)",
+      "Read(//Users/vanessalahrkamp/.claude/plugins/**)",
+      "Bash(gh api *)",
+      "Bash(curl -s \"https://api.github.com/repos/anthropics/skills/contents/skills/frontend-design\")",
+      "Bash(mkdir -p ~/.claude/skills/frontend-design)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/SKILL.md\" -o ~/.claude/skills/frontend-design/SKILL.md)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/LICENSE.txt\" -o ~/.claude/skills/frontend-design/LICENSE.txt)",
+      "Bash(curl -s \"https://api.github.com/repos/nextlevelbuilder/ui-ux-pro-max-skill/contents/\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/main/package.json\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/main/README.md\")",
+      "Bash(ffprobe -v error -show_entries format=duration,size -show_entries stream=width,height,codec_name,avg_frame_rate -of default=noprint_wrappers=1 \"/Users/vanessalahrkamp/Desktop/Claude/Projects/Volumes Website/volumes_reindustrialize.mp4\")",
+      "Bash(git init *)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --use-npm --skip-install)"
+    ]
+  }
+}
