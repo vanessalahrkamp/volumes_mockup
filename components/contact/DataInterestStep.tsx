@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { dataTaxonomy } from "@/lib/dataTaxonomy";
+import { dataTaxonomy, type DataTaxonomyItem } from "@/lib/dataTaxonomy";
 import { buildMailto } from "@/lib/buildMailto";
 
 type Phase = "select" | "details" | "done";
@@ -16,6 +16,9 @@ export function DataInterestStep({
   const [phase, setPhase] = useState<Phase>("select");
   const [query, setQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -25,15 +28,39 @@ export function DataInterestStep({
 
   const verb = role === "Buyer" ? "buying" : "selling";
 
+  const unknownItem = useMemo(
+    () => dataTaxonomy.find((entry) => entry.category === "Unknown")!,
+    [],
+  );
+
+  const groupedCategories = useMemo(() => {
+    const map = new Map<string, DataTaxonomyItem[]>();
+    for (const entry of dataTaxonomy) {
+      if (entry.category === "Unknown") continue;
+      if (!map.has(entry.category)) map.set(entry.category, []);
+      map.get(entry.category)!.push(entry);
+    }
+    return Array.from(map.entries());
+  }, []);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return dataTaxonomy;
+    if (!q) return null;
     return dataTaxonomy.filter(
       (entry) =>
         entry.item.toLowerCase().includes(q) ||
         entry.category.toLowerCase().includes(q),
     );
   }, [query]);
+
+  function toggleCategory(category: string) {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  }
 
   function toggle(id: number) {
     setSelectedIds((prev) => {
@@ -84,7 +111,7 @@ export function DataInterestStep({
       <div>
         <h2
           id="contact-modal-title"
-          className="font-display text-xl font-semibold text-ink-primary"
+          className="text-xl font-semibold text-ink-primary"
         >
           Ready to send
         </h2>
@@ -115,7 +142,7 @@ export function DataInterestStep({
       <div>
         <h2
           id="contact-modal-title"
-          className="font-display text-xl font-semibold text-ink-primary"
+          className="text-xl font-semibold text-ink-primary"
         >
           Your details
         </h2>
@@ -182,7 +209,7 @@ export function DataInterestStep({
     <div>
       <h2
         id="contact-modal-title"
-        className="font-display text-xl font-semibold text-ink-primary"
+        className="text-xl font-semibold text-ink-primary"
       >
         What data are you interested in {verb}?
       </h2>
@@ -201,27 +228,63 @@ export function DataInterestStep({
         onKeyDown={handleListKeyDown}
         className="mt-3 max-h-64 overflow-y-auto rounded-lg border border-white/10"
       >
-        {filtered.map((entry) => (
-          <label
-            key={entry.id}
-            className="flex cursor-pointer items-center justify-between gap-3 border-b border-white/5 px-3 py-2.5 text-sm last:border-b-0 hover:bg-white/5"
-          >
-            <span className="flex items-center gap-3">
-              <input
-                type="checkbox"
+        {filtered ? (
+          <>
+            {filtered.map((entry) => (
+              <ItemRow
+                key={entry.id}
+                entry={entry}
                 checked={selectedIds.has(entry.id)}
-                onChange={() => toggle(entry.id)}
-                className="h-4 w-4 accent-[color:var(--color-accent)]"
+                onToggle={toggle}
+                showCategory
               />
-              <span className="text-ink-body">{entry.item}</span>
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">
-              {entry.category}
-            </span>
-          </label>
-        ))}
-        {filtered.length === 0 && (
-          <p className="px-3 py-4 text-sm text-ink-muted">No matches.</p>
+            ))}
+            {filtered.length === 0 && (
+              <p className="px-3 py-4 text-sm text-ink-muted">No matches.</p>
+            )}
+          </>
+        ) : (
+          <>
+            <ItemRow
+              entry={unknownItem}
+              checked={selectedIds.has(unknownItem.id)}
+              onToggle={toggle}
+            />
+            {groupedCategories.map(([category, items]) => {
+              const isOpen = expandedCategories.has(category);
+              const selectedCount = items.filter((entry) =>
+                selectedIds.has(entry.id),
+              ).length;
+              return (
+                <div key={category} className="border-b border-white/5 last:border-b-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleCategory(category)}
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-white/5"
+                  >
+                    <span className="font-mono text-[11px] uppercase tracking-wide text-ink-muted">
+                      {category}
+                      {selectedCount > 0 ? ` (${selectedCount})` : ""}
+                    </span>
+                    <span aria-hidden className="text-ink-muted">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+                  {isOpen &&
+                    items.map((entry) => (
+                      <ItemRow
+                        key={entry.id}
+                        entry={entry}
+                        checked={selectedIds.has(entry.id)}
+                        onToggle={toggle}
+                        indent
+                      />
+                    ))}
+                </div>
+              );
+            })}
+          </>
         )}
       </div>
 
@@ -242,6 +305,43 @@ export function DataInterestStep({
 
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-transparent px-3 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent/60 focus:outline-none";
+
+function ItemRow({
+  entry,
+  checked,
+  onToggle,
+  showCategory,
+  indent,
+}: {
+  entry: DataTaxonomyItem;
+  checked: boolean;
+  onToggle: (id: number) => void;
+  showCategory?: boolean;
+  indent?: boolean;
+}) {
+  return (
+    <label
+      className={`flex cursor-pointer items-center justify-between gap-3 border-b border-white/5 py-2.5 pr-3 text-sm last:border-b-0 hover:bg-white/5 ${
+        indent ? "pl-9" : "pl-3"
+      }`}
+    >
+      <span className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={() => onToggle(entry.id)}
+          className="h-4 w-4 accent-[color:var(--color-accent)]"
+        />
+        <span className="text-ink-body">{entry.item}</span>
+      </span>
+      {showCategory && (
+        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">
+          {entry.category}
+        </span>
+      )}
+    </label>
+  );
+}
 
 function Field({
   label,

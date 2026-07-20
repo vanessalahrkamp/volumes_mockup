@@ -1,12 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sora.variable} ${inter.variable} ${plexMono.variable} h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${plexMono.variable} h-dvh overflow-hidden antialiased`}
     >
       <body className="flex h-dvh flex-col overflow-hidden bg-ground text-ink-primary overscroll-none">
         {children}

@@ -27,7 +27,6 @@
   --color-accent-blue-end: var(--color-accent-blue-end);
   --color-warning: var(--color-warning);
 
-  --font-display: var(--font-sora);
   --font-body: var(--font-inter);
   --font-mono: var(--font-plex-mono);
 }

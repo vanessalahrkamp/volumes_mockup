@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { HeroVideo } from "./HeroVideo";
-import { VolumesLogo3D } from "./VolumesLogo3D";
 import type { InquiryRole } from "@/lib/buildMailto";
 
 const ROLES: InquiryRole[] = ["Buyer", "Seller", "Investor"];
@@ -42,17 +41,14 @@ export function Hero({
         logo perfectly still when the overlay opens/closes.
       */}
       <div className="relative z-10 flex flex-col items-center">
-        <div aria-hidden>
-          <VolumesLogo3D />
-        </div>
-        <h1 className="mt-4 sm:mt-6">
+        <h1>
           <Image
-            src="/volumes-wordmark.png"
+            src="/volumes-lockup.png"
             alt="Volumes"
             width={1600}
-            height={148}
+            height={847}
             priority
-            className="w-56 sm:w-72 md:w-80"
+            className="w-72 sm:w-[420px] md:w-[520px]"
           />
         </h1>
 

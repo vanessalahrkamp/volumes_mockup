@@ -29,7 +29,7 @@ export function InvestorStep({
     <div>
       <h2
         id="contact-modal-title"
-        className="font-display text-xl font-semibold text-ink-primary"
+        className="text-xl font-semibold text-ink-primary"
       >
         Investor access
       </h2>
