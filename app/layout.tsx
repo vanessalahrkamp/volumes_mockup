@@ -43,9 +43,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${plexMono.variable} h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${plexMono.variable} antialiased`}
     >
-      <body className="flex h-dvh flex-col overflow-hidden bg-ground text-ink-primary overscroll-none">
+      <body className="bg-ground text-ink-primary overscroll-none">
         {children}
       </body>
     </html>
