@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -36,21 +36,32 @@ export function Hero({
   const [revealed, setRevealed] = useState(false);
   const [groupShift, setGroupShift] = useState(-60);
   const revealBlockRef = useRef<HTMLDivElement>(null);
+  // The logo group rises by half the revealed block's real height (plus its
+  // top margin) so the combined center of mass stays in the vertical middle
+  // of the viewport on any screen size.
+  function measureGroupShift() {
+    const block = revealBlockRef.current;
+    if (!block) return;
+    const marginTop = window.innerWidth >= 640 ? 32 : 24;
+    setGroupShift(-((block.offsetHeight + marginTop) / 2));
+  }
+
   useMotionValueEvent(scrollYProgress, "change", (progress) => {
     // hysteresis so the reveal doesn't flicker right at the threshold
     const on = revealed ? progress > 0.28 : progress > 0.38;
-    if (on && !revealed) {
-      // The logo group rises by half the revealed block's real height
-      // (plus its top margin) so the combined center of mass stays in the
-      // vertical middle of the viewport on any screen size.
-      const block = revealBlockRef.current;
-      if (block) {
-        const marginTop = window.innerWidth >= 640 ? 32 : 24;
-        setGroupShift(-((block.offsetHeight + marginTop) / 2));
-      }
-    }
+    if (on && !revealed) measureGroupShift();
     if (on !== revealed) setRevealed(on);
   });
+
+  // Re-measure when the window changes size (e.g. entering macOS fullscreen)
+  // — the revealed block's height shifts across breakpoints and button
+  // wrapping, and a stale shift leaves the ensemble off-center.
+  useEffect(() => {
+    if (!revealed) return;
+    const onResize = () => measureGroupShift();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [revealed]);
 
   return (
     <section ref={sectionRef} className="relative h-[150vh]">
@@ -89,8 +100,13 @@ export function Hero({
           below is `absolute` and out of flow — so groupY is the single
           source of vertical motion for the whole ensemble.
         */}
+        {/*
+          The shift always applies when revealed — MotionConfig's
+          reducedMotion handling makes it instant rather than animated for
+          reduced-motion users, so the layout stays centered for everyone.
+        */}
         <motion.div
-          animate={{ y: revealed && !reducedMotion ? groupShift : 0 }}
+          animate={{ y: revealed ? groupShift : 0 }}
           transition={{ duration: 0.7, ease: EASE_OUT_QUINT }}
           className="relative z-10 flex flex-col items-center"
         >
