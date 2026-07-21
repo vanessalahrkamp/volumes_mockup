@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { DataInterestStep } from "./DataInterestStep";
-import { InvestorStep } from "./InvestorStep";
-import type { InquiryRole } from "@/lib/buildMailto";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
@@ -15,7 +13,7 @@ export function ContactModal({
   role,
   onClose,
 }: {
-  role: InquiryRole;
+  role: "Buyer" | "Seller";
   onClose: () => void;
 }) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -119,11 +117,7 @@ export function ContactModal({
           </svg>
         </button>
 
-        {role === "Investor" ? (
-          <InvestorStep />
-        ) : (
-          <DataInterestStep role={role} onClose={handleClose} />
-        )}
+        <DataInterestStep role={role} onClose={handleClose} />
       </motion.div>
     </div>
   );
