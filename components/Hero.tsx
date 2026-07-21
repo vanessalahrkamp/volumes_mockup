@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   motion,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
-  useTransform,
 } from "framer-motion";
 import { HeroVideo } from "./HeroVideo";
 import { ChromeButton } from "@/components/ui/ChromeButton";
+import { GradualSpacing } from "@/components/ui/gradual-spacing";
 import type { InquiryRole } from "@/lib/buildMailto";
 
 const ROLES: InquiryRole[] = ["Buyer", "Seller", "Investor"];
@@ -25,29 +26,31 @@ export function Hero({
   const reducedMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Scroll-driven reveal, measured against this section's own scroll range
-  // so it completes on any viewport height (mobile included).
+  // Scroll trigger, measured against this section's own scroll range so it
+  // fires on any viewport height (mobile included). Crossing the threshold
+  // plays the staged reveal: tagline letters, then the buttons together.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
-  const reveal = useTransform(scrollYProgress, [0.08, 0.85], [0, 1]);
-  const textOpacity = useTransform(reveal, [0, 1], [0, 1]);
-  const textY = useTransform(reveal, [0, 1], reducedMotion ? [0, 0] : [24, 0]);
-  // The logo group rises by half the revealed block's real height (plus its
-  // top margin) so the combined center of mass stays in the vertical middle
-  // of the viewport on any screen size.
+  const [revealed, setRevealed] = useState(false);
+  const [groupShift, setGroupShift] = useState(-60);
   const revealBlockRef = useRef<HTMLDivElement>(null);
-  const groupY = useTransform(reveal, (v) => {
-    if (reducedMotion || typeof window === "undefined") return 0;
-    const blockHeight = revealBlockRef.current?.offsetHeight ?? 96;
-    const marginTop = window.innerWidth >= 640 ? 32 : 24;
-    return v * -((blockHeight + marginTop) / 2);
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    // hysteresis so the reveal doesn't flicker right at the threshold
+    const on = revealed ? progress > 0.28 : progress > 0.38;
+    if (on && !revealed) {
+      // The logo group rises by half the revealed block's real height
+      // (plus its top margin) so the combined center of mass stays in the
+      // vertical middle of the viewport on any screen size.
+      const block = revealBlockRef.current;
+      if (block) {
+        const marginTop = window.innerWidth >= 640 ? 32 : 24;
+        setGroupShift(-((block.offsetHeight + marginTop) / 2));
+      }
+    }
+    if (on !== revealed) setRevealed(on);
   });
-  // Nothing invisible should be clickable before the reveal.
-  const textPointerEvents = useTransform(reveal, (v) =>
-    v > 0.4 ? "auto" : "none",
-  );
 
   return (
     <section ref={sectionRef} className="relative h-[150vh]">
@@ -87,7 +90,8 @@ export function Hero({
           source of vertical motion for the whole ensemble.
         */}
         <motion.div
-          style={{ y: groupY }}
+          animate={{ y: revealed && !reducedMotion ? groupShift : 0 }}
+          transition={{ duration: 0.7, ease: EASE_OUT_QUINT }}
           className="relative z-10 flex flex-col items-center"
         >
           <motion.h1
@@ -100,43 +104,76 @@ export function Hero({
             transition={{ duration: 1.3, delay: 0.15, ease: EASE_OUT_QUINT }}
             className="flex flex-col items-center"
           >
+            {/*
+              unoptimized: ship the lossless PNG as-is. The optimizer's lossy
+              WebP re-encode + downscale was softening the chrome edges; the
+              asset is already exactly 2x the largest rendered size.
+            */}
             <Image
-              src="/volumes-mark-chrome.png"
+              src="/volumes-mark-clean.png"
               alt=""
               aria-hidden
-              width={753}
-              height={910}
+              width={416}
+              height={504}
               priority
-              className="w-36 sm:w-44 md:w-52 [filter:drop-shadow(0_0_22px_rgba(228,233,240,0.28))]"
+              unoptimized
+              className="w-36 sm:w-44 md:w-52 [filter:drop-shadow(0_0_24px_rgba(228,233,240,0.35))]"
             />
             <span
-              className="mt-6 bg-clip-text font-body text-[2rem] font-light uppercase leading-none text-transparent sm:mt-8 sm:text-[2.9rem] md:text-[3.5rem]"
+              className="mt-6 bg-clip-text font-body text-[2rem] font-normal uppercase leading-none text-transparent sm:mt-8 sm:text-[2.9rem] md:text-[3.5rem]"
               style={{
                 backgroundImage:
                   "linear-gradient(180deg, #fdfdfe 0%, #e9ecef 30%, #bdc4ca 55%, #8b939b 72%, #d6dbdf 90%, #f2f4f6 100%)",
                 letterSpacing: "0.32em",
                 marginRight: "-0.32em",
-                filter: "drop-shadow(0 0 14px rgba(226,231,238,0.3))",
+                filter: "drop-shadow(0 0 17px rgba(226,231,238,0.4))",
               }}
             >
               Volumes
             </span>
           </motion.h1>
 
-          {/* Bottom text — hidden on load, revealed by scrolling */}
-          <motion.div
+          {/*
+            Bottom text — hidden on load, revealed by scrolling. The block
+            stays mounted (invisible) so its height can be measured for the
+            center-of-mass shift; the tagline slot reserves one line so the
+            measurement doesn't change when the letters mount.
+          */}
+          <div
             ref={revealBlockRef}
-            style={{ opacity: textOpacity, y: textY, pointerEvents: textPointerEvents }}
             className="absolute top-full mt-6 flex w-[calc(100vw-3rem)] max-w-md flex-col items-center gap-5 sm:mt-8"
           >
-            <p className="font-mono text-sm font-medium uppercase tracking-[0.25em] text-ink-primary sm:text-base">
-              Data for Physical AI
-            </p>
+            {/* Step 1 — tagline letters spread in one by one */}
+            <div className="flex h-5 items-center justify-center sm:h-6">
+              {revealed && (
+                <GradualSpacing
+                  text="Data for Physical AI"
+                  className="font-mono text-sm font-medium uppercase text-ink-primary sm:text-base"
+                />
+              )}
+            </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Step 2 — role buttons pop in together once the tagline lands */}
+            <motion.div
+              initial={false}
+              animate={
+                revealed
+                  ? { opacity: 1, scale: 1 }
+                  : { opacity: 0, scale: 0.85 }
+              }
+              transition={
+                revealed
+                  ? { duration: 0.35, delay: 1.1, ease: "easeOut" }
+                  : { duration: 0.2 }
+              }
+              className={`flex flex-wrap items-center justify-center gap-3 ${
+                revealed ? "" : "pointer-events-none"
+              }`}
+            >
               {ROLES.map((role) => (
                 <ChromeButton
                   key={role}
+                  tabIndex={revealed ? undefined : -1}
                   onClick={(event) => {
                     // Clicking a button doesn't reliably focus it in every
                     // browser (notably Safari), and ContactModal restores
@@ -148,8 +185,8 @@ export function Hero({
                   {role}
                 </ChromeButton>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

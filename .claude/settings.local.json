@@ -16,7 +16,10 @@
       "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --use-npm --skip-install)",
       "Bash(npm install *)",
       "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"luxury premium expensive minimal editorial\" --domain style -n 4)",
-      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"micro-interactions hover perceived quality polish\" --domain ux -n 4)"
+      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"micro-interactions hover perceived quality polish\" --domain ux -n 4)",
+      "Bash(gh auth *)",
+      "Bash(curl -s \"https://api.github.com/repos/vanessalahrkamp/volumes_mockup/pulls?state=all&head=vanessalahrkamp:hero-scroll-chrome\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(p['number'], p['state'], 'merged:' , p.get\\('merged_at'\\), p['html_url']\\) for p in d] or print\\('no PR for branch'\\)\")"
     ]
   }
 }
