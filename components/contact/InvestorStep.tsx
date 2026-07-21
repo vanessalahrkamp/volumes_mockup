@@ -20,6 +20,7 @@ export function InvestorStep() {
   const [requestError, setRequestError] = useState("");
   const [requestDone, setRequestDone] = useState(false);
   const [requestBusy, setRequestBusy] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   function handleSignInSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,10 +45,15 @@ export function InvestorStep() {
     setRequestError("");
     setRequestBusy(true);
     try {
-      const res = await fetch("/api/notify", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({
+          formType: "investor",
+          email: trimmed,
+          note: "Interested in joining Volumes as an investor",
+          company_website: honeypot,
+        }),
       });
       if (!res.ok) throw new Error();
       setRequestDone(true);
@@ -201,6 +207,17 @@ export function InvestorStep() {
                       but you can leave your email to be notified.
                     </motion.p>
                   )}
+                  {/* Honeypot — hidden from real users; bots that fill it are dropped */}
+                  <input
+                    type="text"
+                    name="company_website"
+                    value={honeypot}
+                    onChange={(event) => setHoneypot(event.target.value)}
+                    className="sr-only"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
                   {requestError && (
                     <p
                       id="request-email-error"

@@ -3,7 +3,6 @@
 import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { dataTaxonomy, type DataTaxonomyItem } from "@/lib/dataTaxonomy";
-import { buildMailto } from "@/lib/buildMailto";
 import { ChromeButton } from "@/components/ui/ChromeButton";
 import { inputClass } from "./styles";
 
@@ -33,7 +32,9 @@ export function DataInterestStep({
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
-  const [mailtoHref, setMailtoHref] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
 
   const verb = role === "Buyer" ? "buying" : "selling";
@@ -116,18 +117,31 @@ export function DataInterestStep({
 
   const selectionCount = selectedIds.size + (otherChecked ? 1 : 0);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const href = buildMailto({
-      role,
-      name,
-      email,
-      company,
-      message,
-      dataTypes: selectedNames,
-    });
-    setMailtoHref(href);
-    goTo("done");
+    setSendError("");
+    setSending(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formType: role.toLowerCase(),
+          name,
+          email,
+          company,
+          message,
+          dataTypes: selectedNames,
+          company_website: honeypot,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      goTo("done");
+    } catch {
+      setSendError("Something went wrong sending your message. Please try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   const donePhase = (
@@ -136,20 +150,15 @@ export function DataInterestStep({
         id="contact-modal-title"
         className="text-xl font-semibold text-ink-primary"
       >
-        Ready to send
+        Thanks — we&apos;ll be in touch shortly.
       </h2>
       <p className="mt-3 text-sm text-ink-body">
-        We&apos;ve put together your message to Volumes. Open it in your
-        email client to send.
+        Your inquiry is on its way to the Volumes team.
       </p>
-      <ChromeButton href={mailtoHref} className="mt-6">
-        Open email
-        <span aria-hidden>→</span>
-      </ChromeButton>
       <button
         type="button"
         onClick={onClose}
-        className="chrome-underline focus-ring mt-4 block cursor-pointer text-sm text-ink-muted transition-colors hover:text-ink-primary"
+        className="chrome-underline focus-ring mt-6 block cursor-pointer text-sm text-ink-muted transition-colors hover:text-ink-primary"
       >
         Close
       </button>
@@ -202,6 +211,24 @@ export function DataInterestStep({
           />
         </Field>
 
+        {/* Honeypot — hidden from real users; bots that fill it are dropped */}
+        <input
+          type="text"
+          name="company_website"
+          value={honeypot}
+          onChange={(event) => setHoneypot(event.target.value)}
+          className="sr-only"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
+
+        {sendError && (
+          <p aria-live="polite" className="text-xs text-warning">
+            {sendError}
+          </p>
+        )}
+
         <div className="mt-2 flex items-center justify-between">
           <button
             type="button"
@@ -210,8 +237,8 @@ export function DataInterestStep({
           >
             Back
           </button>
-          <ChromeButton type="submit">
-            Next
+          <ChromeButton type="submit" disabled={sending}>
+            {sending ? "Sending…" : "Send"}
             <span aria-hidden>→</span>
           </ChromeButton>
         </div>
