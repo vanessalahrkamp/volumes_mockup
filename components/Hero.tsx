@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
@@ -11,9 +12,10 @@ import {
 import { HeroVideo } from "./HeroVideo";
 import { ChromeButton } from "@/components/ui/ChromeButton";
 import { GradualSpacing } from "@/components/ui/gradual-spacing";
-import type { InquiryRole } from "@/lib/buildMailto";
 
-const ROLES: InquiryRole[] = ["Buyer", "Seller", "Investor"];
+type ContactRole = "Buyer" | "Seller";
+
+const PILL_ROLES: ContactRole[] = ["Buyer", "Seller"];
 const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
 
 export function Hero({
@@ -21,7 +23,7 @@ export function Hero({
   onSelectRole,
 }: {
   videoPaused: boolean;
-  onSelectRole: (role: InquiryRole) => void;
+  onSelectRole: (role: ContactRole) => void;
 }) {
   const reducedMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
@@ -169,7 +171,7 @@ export function Hero({
               )}
             </div>
 
-            {/* Step 2 — role buttons pop in together once the tagline lands */}
+            {/* Step 2 — Buyer/Seller pills pop in together once the tagline lands */}
             <motion.div
               initial={false}
               animate={
@@ -186,7 +188,7 @@ export function Hero({
                 revealed ? "" : "pointer-events-none"
               }`}
             >
-              {ROLES.map((role) => (
+              {PILL_ROLES.map((role) => (
                 <ChromeButton
                   key={role}
                   tabIndex={revealed ? undefined : -1}
@@ -201,6 +203,28 @@ export function Hero({
                   {role}
                 </ChromeButton>
               ))}
+            </motion.div>
+
+            {/* Step 3 — the Investor link rises in on its own, a beat later */}
+            <motion.div
+              initial={false}
+              animate={
+                revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }
+              }
+              transition={
+                revealed
+                  ? { duration: 0.45, delay: 1.5, ease: "easeOut" }
+                  : { duration: 0.2 }
+              }
+              className={revealed ? "" : "pointer-events-none"}
+            >
+              <Link
+                href="/investors"
+                tabIndex={revealed ? undefined : -1}
+                className="focus-ring cursor-pointer font-mono text-xs uppercase tracking-[0.2em] text-ink-primary underline decoration-ink-primary/60 underline-offset-4 transition-colors hover:decoration-ink-primary"
+              >
+                Investor
+              </Link>
             </motion.div>
           </div>
         </motion.div>
