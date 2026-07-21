@@ -120,7 +120,7 @@ export function ContactModal({
         </button>
 
         {role === "Investor" ? (
-          <InvestorStep onClose={handleClose} />
+          <InvestorStep />
         ) : (
           <DataInterestStep role={role} onClose={handleClose} />
         )}
