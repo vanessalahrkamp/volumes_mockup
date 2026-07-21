@@ -117,7 +117,7 @@ export function Hero({
               height={504}
               priority
               unoptimized
-              className="w-36 sm:w-44 md:w-52 [filter:drop-shadow(0_0_24px_rgba(228,233,240,0.35))]"
+              className="w-36 sm:w-44 md:w-52 [filter:drop-shadow(0_0_24px_rgba(228,233,240,0.3))]"
             />
             <span
               className="mt-6 bg-clip-text font-body text-[2rem] font-normal uppercase leading-none text-transparent sm:mt-8 sm:text-[2.9rem] md:text-[3.5rem]"
@@ -126,7 +126,7 @@ export function Hero({
                   "linear-gradient(180deg, #fdfdfe 0%, #e9ecef 30%, #bdc4ca 55%, #8b939b 72%, #d6dbdf 90%, #f2f4f6 100%)",
                 letterSpacing: "0.32em",
                 marginRight: "-0.32em",
-                filter: "drop-shadow(0 0 17px rgba(226,231,238,0.4))",
+                filter: "drop-shadow(0 0 17px rgba(226,231,238,0.35))",
               }}
             >
               Volumes
