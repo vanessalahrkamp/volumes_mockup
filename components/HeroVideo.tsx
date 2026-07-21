@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -18,12 +18,22 @@ function getServerSnapshot() {
   return false;
 }
 
-export function HeroVideo() {
+export function HeroVideo({ paused = false }: { paused?: boolean }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const reducedMotion = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot,
   );
+
+  // Pausing while the modal is open keeps the glass panel's backdrop-filter
+  // cheap: blurring a static frame is nearly free, a playing video isn't.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (paused) video.pause();
+    else video.play().catch(() => {});
+  }, [paused]);
 
   if (reducedMotion) {
     return (
@@ -39,6 +49,7 @@ export function HeroVideo() {
 
   return (
     <video
+      ref={videoRef}
       autoPlay
       muted
       loop

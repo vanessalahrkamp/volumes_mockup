@@ -13,7 +13,10 @@
       "Bash(curl -s \"https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/main/README.md\")",
       "Bash(ffprobe -v error -show_entries format=duration,size -show_entries stream=width,height,codec_name,avg_frame_rate -of default=noprint_wrappers=1 \"/Users/vanessalahrkamp/Desktop/Claude/Projects/Volumes Website/volumes_reindustrialize.mp4\")",
       "Bash(git init *)",
-      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --use-npm --skip-install)"
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --use-npm --skip-install)",
+      "Bash(npm install *)",
+      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"luxury premium expensive minimal editorial\" --domain style -n 4)",
+      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"micro-interactions hover perceived quality polish\" --domain ux -n 4)"
     ]
   }
 }

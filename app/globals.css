@@ -9,9 +9,43 @@
   --color-ink-muted: #8a8a8a;
 
   --color-accent: #f5f5f5;
-  --color-accent-blue-start: #3b6ea8;
-  --color-accent-blue-end: #4a86c5;
   --color-warning: #ff6b4a;
+
+  /* Chrome accent — desaturated spectral ramp. Borders, underlines, and
+     checked states only; text always stays solid ink for contrast. */
+  --chrome-steel: #9fb0bf;
+  --chrome-silver: #cfd3d9;
+  --chrome-violet: #e6e2ee;
+  --chrome-warm: #d8d2c6;
+
+  --gradient-chrome: linear-gradient(
+    115deg,
+    var(--chrome-steel) 0%,
+    var(--chrome-violet) 28%,
+    var(--chrome-silver) 50%,
+    var(--chrome-warm) 72%,
+    var(--chrome-steel) 100%
+  );
+  --gradient-chrome-soft: linear-gradient(
+    115deg,
+    rgba(159, 176, 191, 0.45) 0%,
+    rgba(230, 226, 238, 0.55) 28%,
+    rgba(207, 211, 217, 0.45) 50%,
+    rgba(216, 210, 198, 0.5) 72%,
+    rgba(159, 176, 191, 0.45) 100%
+  );
+
+  --glass-fill: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  --glass-edge: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.14)
+  );
 }
 
 @theme inline {
@@ -23,16 +57,150 @@
   --color-ink-muted: var(--color-ink-muted);
 
   --color-accent: var(--color-accent);
-  --color-accent-blue-start: var(--color-accent-blue-start);
-  --color-accent-blue-end: var(--color-accent-blue-end);
   --color-warning: var(--color-warning);
 
   --font-body: var(--font-inter);
   --font-mono: var(--font-plex-mono);
+
+  --shadow-glass: inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
+    0 24px 64px -16px rgba(0, 0, 0, 0.7), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-focus: 0 0 0 3px rgba(255, 255, 255, 0.12);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body {
   background: var(--color-ground);
   color: var(--color-ink-primary);
   font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--chrome-violet);
+  color: #000000;
+}
+
+/* The modal's data-type list is the only scrollable region on the site. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+/* Pill button with a chrome gradient border; hover slides the bright
+   gradient across the border (background-position on the border layer). */
+@utility chrome-pill {
+  border: 1px solid transparent;
+  background-image: linear-gradient(var(--color-void), var(--color-void)),
+    var(--gradient-chrome-soft);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  background-repeat: no-repeat;
+  background-size:
+    100% 100%,
+    250% 100%;
+  background-position:
+    0 0,
+    0% 50%;
+  transition:
+    background-position 450ms var(--ease-out-soft),
+    box-shadow 250ms var(--ease-out-soft),
+    transform 120ms ease;
+  &:hover {
+    background-image: linear-gradient(var(--color-void), var(--color-void)),
+      var(--gradient-chrome);
+    background-position:
+      0 0,
+      100% 50%;
+    box-shadow: 0 0 24px -10px rgba(207, 211, 217, 0.35);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+@utility glass-panel {
+  border: 1px solid transparent;
+  background-image: var(--glass-fill),
+    linear-gradient(rgba(8, 8, 8, 0.72), rgba(8, 8, 8, 0.72)),
+    var(--glass-edge);
+  background-origin: padding-box, padding-box, border-box;
+  background-clip: padding-box, padding-box, border-box;
+  backdrop-filter: blur(20px) saturate(1.15);
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-ink-primary);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+@utility film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+@utility chrome-checkbox {
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.05);
+  transition:
+    border-color 200ms,
+    background-color 200ms,
+    box-shadow 200ms;
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+  &:checked {
+    border-color: transparent;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' viewBox='0 0 10 8'%3E%3Cpath d='M1 4l2.5 2.5L9 1' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        center / 10px no-repeat,
+      var(--gradient-chrome);
+  }
+}
+
+/* Text link underline: faint static line at rest, chrome line sweeps in
+   from the left on hover (own hover or a hovered parent). */
+@utility chrome-underline {
+  position: relative;
+  padding-bottom: 4px;
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.35)
+  );
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 0%;
+    background: var(--gradient-chrome);
+    transition: width 300ms var(--ease-out-soft);
+  }
+  &:hover::after,
+  :hover > &::after {
+    width: 100%;
+  }
 }

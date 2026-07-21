@@ -1,23 +1,79 @@
 "use client";
 
 import Image from "next/image";
+import { useSyncExternalStore } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { HeroVideo } from "./HeroVideo";
+import { GradualSpacing } from "@/components/ui/gradual-spacing";
+import { ChromeButton } from "@/components/ui/ChromeButton";
 import type { InquiryRole } from "@/lib/buildMailto";
 
 const ROLES: InquiryRole[] = ["Buyer", "Seller", "Investor"];
+const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
+
+const COARSE_POINTER_QUERY = "(pointer: coarse)";
+
+function subscribeCoarsePointer(callback: () => void) {
+  const query = window.matchMedia(COARSE_POINTER_QUERY);
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
 
 export function Hero({
   infoOpen,
+  videoPaused,
   onSelectRole,
-  onGoHome,
 }: {
   infoOpen: boolean;
+  videoPaused: boolean;
   onSelectRole: (role: InquiryRole) => void;
-  onGoHome: () => void;
 }) {
+  const reducedMotion = useReducedMotion();
+
+  // Mouse parallax: video drifts with the pointer, content counters it.
+  // Skipped entirely on touch devices and under reduced motion.
+  const coarsePointer = useSyncExternalStore(
+    subscribeCoarsePointer,
+    () => window.matchMedia(COARSE_POINTER_QUERY).matches,
+    () => true,
+  );
+  const parallaxOn = !reducedMotion && !coarsePointer;
+
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 55, damping: 18 });
+  const sy = useSpring(my, { stiffness: 55, damping: 18 });
+  const videoX = useTransform(sx, (v) => v * 16);
+  const videoY = useTransform(sy, (v) => v * 16);
+  const contentX = useTransform(sx, (v) => v * -6);
+  const contentY = useTransform(sy, (v) => v * -6);
+
+  function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    mx.set(event.clientX / rect.width - 0.5);
+    my.set(event.clientY / rect.height - 0.5);
+  }
+
   return (
-    <section className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden px-6 text-center">
-      <HeroVideo />
+    <section
+      onPointerMove={parallaxOn ? handlePointerMove : undefined}
+      className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden px-6 text-center"
+    >
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 will-change-transform"
+        style={
+          parallaxOn ? { x: videoX, y: videoY, scale: 1.04 } : undefined
+        }
+      >
+        <HeroVideo paused={videoPaused} />
+      </motion.div>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -34,14 +90,38 @@ export function Hero({
             "radial-gradient(ellipse 95% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.42) 100%)",
         }}
       />
+      <div
+        aria-hidden
+        className="film-grain pointer-events-none absolute inset-0 z-[1] opacity-[0.05]"
+      />
+
+      {/* First-load: the scene develops out of black instead of popping in. */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[2] bg-black"
+        initial={{ opacity: reducedMotion ? 0 : 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 1.1, ease: "easeOut" }}
+      />
 
       {/*
         This wrapper's size is driven only by the logo, since the info
         overlay below is `absolute` and removed from flow. That keeps the
         logo perfectly still when the overlay opens/closes.
       */}
-      <div className="relative z-10 flex flex-col items-center">
-        <h1>
+      <motion.div
+        className="relative z-10 flex flex-col items-center"
+        style={parallaxOn ? { x: contentX, y: contentY } : undefined}
+      >
+        <motion.h1
+          initial={
+            reducedMotion
+              ? false
+              : { opacity: 0, scale: 1.05, filter: "blur(14px)" }
+          }
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          transition={{ duration: 1.3, delay: 0.15, ease: EASE_OUT_QUINT }}
+        >
           <Image
             src="/volumes-lockup.png"
             alt="Volumes"
@@ -50,19 +130,26 @@ export function Hero({
             priority
             className="w-72 sm:w-[420px] md:w-[520px]"
           />
-        </h1>
+        </motion.h1>
 
         {infoOpen && (
           <div className="absolute top-full mt-6 flex w-[calc(100vw-3rem)] max-w-md flex-col items-center gap-5 sm:mt-8">
-            <p className="font-mono text-sm uppercase tracking-[0.25em] text-ink-body sm:text-base">
-              Data for Physical AI
-            </p>
+            {/* Step 1 — tagline letters spread in one by one */}
+            <GradualSpacing
+              text="Data for Physical AI"
+              className="font-mono text-sm font-medium uppercase text-ink-primary sm:text-base"
+            />
 
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Step 2 — role buttons pop in together once the tagline lands */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: 1.15, ease: "easeOut" }}
+              className="flex flex-wrap items-center justify-center gap-3"
+            >
               {ROLES.map((role) => (
-                <button
+                <ChromeButton
                   key={role}
-                  type="button"
                   onClick={(event) => {
                     // Clicking a button doesn't reliably focus it in every
                     // browser (notably Safari), and ContactModal restores
@@ -70,27 +157,24 @@ export function Hero({
                     event.currentTarget.focus();
                     onSelectRole(role);
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-6 py-3 font-mono text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   {role}
-                </button>
+                </ChromeButton>
               ))}
-            </div>
+            </motion.div>
 
-            <p className="max-w-xs text-sm text-ink-muted">
-              Volumes buys and sells data for physical AI.
-            </p>
-
-            <button
-              type="button"
-              onClick={onGoHome}
-              className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted underline decoration-ink-muted/40 underline-offset-4 transition-colors hover:text-ink-primary hover:decoration-ink-primary"
+            {/* Step 3 — blurb fades in last */}
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 1.6, ease: "easeOut" }}
+              className="max-w-xs text-sm text-ink-body"
             >
-              Home
-            </button>
+              Volumes buys and sells data for physical AI.
+            </motion.p>
           </div>
         )}
-      </div>
+      </motion.div>
     </section>
   );
 }

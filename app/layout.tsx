@@ -23,11 +23,16 @@ export const metadata: Metadata = {
     url: "https://volumes.cloud",
     siteName: "Volumes",
     type: "website",
+    images: [{ url: "/hero-poster.jpg", width: 1280, height: 1334 }],
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

@@ -60,5 +60,5 @@ export const dataTaxonomy: DataTaxonomyItem[] = [
   { id: 52, item: "Point cloud", category: "Geometry / 3D" },
   { id: 53, item: "Medical imaging", category: "Medical / Bio" },
   { id: 54, item: "Simulation / Synthetic", category: "Synthetic / Derived" },
-  { id: 55, item: "Unknown / not sure yet", category: "Unknown" },
+  { id: 55, item: "Unknown", category: "Unknown" },
 ];
